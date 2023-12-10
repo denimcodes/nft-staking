@@ -15,7 +15,11 @@ declare_id!("58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA");
 pub mod staking_program {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
+    pub fn stake(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
+        stake::handler(ctx, delegate_bump)
+    }
+
+    pub fn unstake(ctx: Context<Unstake>) -> Result<()> {
+        unstake::handler(ctx)
     }
 }
