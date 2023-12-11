@@ -12,12 +12,6 @@ use crate::{stake_info::StakeInfo, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PRE
 pub struct Unstake<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
-    pub vault: AccountInfo<'info>,
-    pub mint: Account<'info, Mint>,
-    #[account(token::mint = mint, token::authority = vault)]
-    pub vault_token: Account<'info, TokenAccount>,
-    #[account(token::mint = mint, token::authority = user)]
-    pub user_token: Account<'info, TokenAccount>,
     #[account(mut)]
     pub stake_info: Account<'info, StakeInfo>,
     pub nft_mint: Account<'info, Mint>,
@@ -42,7 +36,7 @@ pub struct Unstake<'info> {
 
 pub fn handler(ctx: Context<Unstake>) -> Result<()> {
     let stake_info = &mut ctx.accounts.stake_info;
-    stake_info.unstaked_at = Clock::get()?.unix_timestamp;
+    stake_info.unstaked_at = Clock::get()?.unix_timestamp as u64;
     stake_info.is_active = false;
 
     // account infos

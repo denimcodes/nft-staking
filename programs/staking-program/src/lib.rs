@@ -22,4 +22,8 @@ pub mod staking_program {
     pub fn unstake(ctx: Context<Unstake>) -> Result<()> {
         unstake::handler(ctx)
     }
+
+    pub fn claim_reward(ctx: Context<ClaimReward>) -> Result<()> {
+        claim_reward::handler(ctx)
+    }
 }

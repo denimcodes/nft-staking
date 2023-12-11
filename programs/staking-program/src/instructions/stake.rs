@@ -47,7 +47,7 @@ pub fn handler(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
     stake_info.user = ctx.accounts.user.key();
     stake_info.nft_mint = ctx.accounts.nft_mint.key();
     stake_info.is_active = true;
-    stake_info.staked_at = Clock::get()?.unix_timestamp;
+    stake_info.staked_at = Clock::get()?.unix_timestamp as u64;
 
     let user_info = &ctx.accounts.user.to_account_info();
     let mint_info = &ctx.accounts.nft_mint.to_account_info();
