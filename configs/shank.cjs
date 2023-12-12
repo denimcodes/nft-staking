@@ -11,7 +11,7 @@ generateIdl({
   programId: "58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA",
   idlDir,
   binaryInstallDir,
-  programDir: path.join(programDir, "staking_program"),
+  programDir: path.join(programDir, "staking-program"),
   rustbin: {
     locked: true,
     versionRangeFallback: "0.27.0",
