@@ -8,9 +8,13 @@ describe("staking-program", () => {
 
   const program = anchor.workspace.StakingProgram as Program<StakingProgram>;
 
-  it("Is initialized!", async () => {
+  it("staking nft", async () => {
     // Add your test here.
-    const tx = await program.methods.initialize().rpc();
-    console.log("Your transaction signature", tx);
+  });
+  it("unstaking nft", async () => {
+    // Add your test here.
+  });
+  it("claim rewards", async () => {
+    // Add your test here.
   });
 });

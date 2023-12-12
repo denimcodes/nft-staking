@@ -4,7 +4,7 @@ use anchor_spl::{
     token_2022,
 };
 
-use crate::stake_info::NftStake;
+use crate::nft_stake::NftStake;
 
 // 1. update stake info
 // 2. calculate reward
@@ -16,7 +16,7 @@ pub struct ClaimReward<'info> {
     pub user: Signer<'info>,
     pub vault_authority: Signer<'info>,
     #[account(mut)]
-    pub stake_info: Account<'info, NftStake>,
+    pub nft_stake: Account<'info, NftStake>,
     pub mint: Account<'info, Mint>,
     #[account(mut, token::mint = mint, token::authority = user)]
     pub user_token: Account<'info, TokenAccount>,
@@ -27,10 +27,10 @@ pub struct ClaimReward<'info> {
 }
 
 pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
-    let stake_info = &mut ctx.accounts.stake_info;
+    let nft_stake = &mut ctx.accounts.nft_stake;
 
-    let reward_amount = stake_info.calculate_reward_amount();
-    stake_info.reward_amount += reward_amount;
+    let reward_amount = nft_stake.calculate_reward_amount();
+    nft_stake.reward_amount += reward_amount;
 
     // transfer reward to user
     let decimals = ctx.accounts.mint.decimals;

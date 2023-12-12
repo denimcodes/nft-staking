@@ -6,7 +6,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use crate::{stake_info::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
+use crate::{nft_stake::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
 
 // 1. update stake info
 // 2. update authority to delegate
@@ -53,7 +53,7 @@ pub fn handler(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
     stake_info.user = ctx.accounts.user.key();
     stake_info.nft_mint = ctx.accounts.nft_mint.key();
     stake_info.is_active = true;
-    stake_info.staked_on = Clock::get()?.unix_timestamp as u64;
+    stake_info.staked_on = Clock::get()?.unix_timestamp ;
 
     let user_info = &ctx.accounts.user.to_account_info();
     let mint_info = &ctx.accounts.nft_mint.to_account_info();

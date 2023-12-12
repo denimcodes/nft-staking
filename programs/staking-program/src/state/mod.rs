@@ -1,1 +1,1 @@
-pub mod stake_info;
+pub mod nft_stake;

@@ -6,7 +6,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use crate::{stake_info::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
+use crate::{nft_stake::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
 
 #[derive(Accounts)]
 pub struct Unstake<'info> {
@@ -43,7 +43,7 @@ pub struct Unstake<'info> {
 
 pub fn handler(ctx: Context<Unstake>) -> Result<()> {
     let nft_stake = &mut ctx.accounts.nft_stake;
-    nft_stake.unstaked_on = Clock::get()?.unix_timestamp as u64;
+    nft_stake.unstaked_on = Clock::get()?.unix_timestamp;
     nft_stake.is_active = false;
 
     // account infos
