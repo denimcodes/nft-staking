@@ -6,38 +6,45 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use crate::{stake_info::StakeInfo, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
+use crate::{stake_info::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
 
 #[derive(Accounts)]
 pub struct Unstake<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
     #[account(mut)]
-    pub stake_info: Account<'info, StakeInfo>,
+    pub nft_stake: Account<'info, NftStake>,
     pub nft_mint: Account<'info, Mint>,
     #[account(token::mint = nft_mint, token::authority = user)]
     pub user_nft_token: Account<'info, TokenAccount>,
+    /// CHECK: nft token record owner = user
     #[account(mut)]
     pub user_nft_token_record: AccountInfo<'info>,
-    #[account(mut, seeds = [DELEGATE_SEED_PREFIX.as_bytes(), stake_info.key().as_ref()], bump = stake_info.delegate_bump)]
+    #[account(mut, seeds = [DELEGATE_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump = nft_stake.delegate_bump)]
     pub delegate: SystemAccount<'info>,
-    #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), stake_info.key().as_ref()], bump)]
+    #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump)]
     pub locked_address: SystemAccount<'info>,
+    /// CHECK: nft metadata edition
     pub edition: AccountInfo<'info>,
+    /// CHECK: nft creator, collection
     pub metadata: AccountInfo<'info>,
+    /// CHECK: metaplex standard ruleset
     #[account(mut)]
     pub auth_rules: AccountInfo<'info>,
+    /// CHECK: program address
     pub auth_rules_program: AccountInfo<'info>,
+    /// CHECK: program address
     pub token_metadata_program: AccountInfo<'info>,
+    /// CHECK: program address
     pub sysvar_instructions: AccountInfo<'info>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
 
 pub fn handler(ctx: Context<Unstake>) -> Result<()> {
-    let stake_info = &mut ctx.accounts.stake_info;
-    stake_info.unstaked_at = Clock::get()?.unix_timestamp as u64;
-    stake_info.is_active = false;
+    let nft_stake = &mut ctx.accounts.nft_stake;
+    nft_stake.unstaked_on = Clock::get()?.unix_timestamp as u64;
+    nft_stake.is_active = false;
 
     // account infos
     let user_info = &ctx.accounts.user.to_account_info();
@@ -53,11 +60,11 @@ pub fn handler(ctx: Context<Unstake>) -> Result<()> {
     let system_program_info = &ctx.accounts.system_program.to_account_info();
 
     // signer seeds
-    let stake_info_key = stake_info.key();
+    let nft_stake_key = nft_stake.key();
     let delegate_signer_seeds: &[&[&[u8]]] = &[&[
         DELEGATE_SEED_PREFIX.as_bytes(),
-        stake_info_key.as_ref(),
-        &[stake_info.delegate_bump],
+        nft_stake_key.as_ref(),
+        &[nft_stake.delegate_bump],
     ]];
 
     // unlock nft

@@ -4,25 +4,25 @@ use anchor_lang::prelude::*;
 
 #[account]
 #[derive(InitSpace)]
-pub struct StakeInfo {
+pub struct NftStake {
     pub user: Pubkey,
     pub nft_mint: Pubkey,
     pub is_active: bool,
-    pub staked_at: u64,
-    pub unstaked_at: u64,
-    pub last_claimed_at: u64,
+    pub staked_on: u64,
+    pub unstaked_on: u64,
+    pub last_claimed: u64,
     pub reward_amount: u64,
 
     pub bump: u8,
     pub delegate_bump: u8,
 }
 
-impl StakeInfo {
+impl NftStake {
     pub fn calculate_reward_amount(&self) -> u64 {
-        let unix_timestamp = if self.last_claimed_at == 0 {
-            self.staked_at
+        let unix_timestamp = if self.last_claimed == 0 {
+            self.staked_on
         } else {
-            self.last_claimed_at
+            self.last_claimed
         };
 
         let days_elapsed = Self::days_elapsed(unix_timestamp);

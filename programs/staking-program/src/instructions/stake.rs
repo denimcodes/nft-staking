@@ -6,7 +6,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use crate::{stake_info::StakeInfo, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
+use crate::{stake_info::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
 
 // 1. update stake info
 // 2. update authority to delegate
@@ -17,24 +17,30 @@ use crate::{stake_info::StakeInfo, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PRE
 pub struct Stake<'info> {
     #[account(mut)]
     pub user: Signer<'info>,
-    #[account(init, payer = user, space = 8 + StakeInfo::INIT_SPACE)]
-    pub stake_info: Account<'info, StakeInfo>,
-    #[account(mint::authority = user)]
+    #[account(init, payer = user, space = 8 + NftStake::INIT_SPACE)]
+    pub nft_stake: Account<'info, NftStake>,
     pub nft_mint: Account<'info, Mint>,
-    #[account(token::mint = nft_mint, token::authority = nft_mint)]
+    #[account(token::mint = nft_mint, token::authority = user)]
     pub user_nft_token: Account<'info, TokenAccount>,
+    /// CHECK: nft token record owner = user
     #[account(mut)]
     pub user_nft_token_record: AccountInfo<'info>,
-    #[account(mut, seeds = [DELEGATE_SEED_PREFIX.as_bytes(), stake_info.key().as_ref()], bump = delegate_bump)]
+    #[account(mut, seeds = [DELEGATE_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump = delegate_bump)]
     pub delegate: SystemAccount<'info>,
-    #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), stake_info.key().as_ref()], bump)]
+    #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump)]
     pub locked_address: SystemAccount<'info>,
+    /// CHECK: nft metadata edition
     pub edition: AccountInfo<'info>,
+    /// CHECK: nft creator, collection
     pub metadata: AccountInfo<'info>,
+    /// CHECK: metaplex standard ruleset
     #[account(mut)]
     pub auth_rules: AccountInfo<'info>,
+    /// CHECK: program address
     pub auth_rules_program: AccountInfo<'info>,
+    /// CHECK: program address
     pub token_metadata_program: AccountInfo<'info>,
+    /// CHECK: program address
     pub sysvar_instructions: AccountInfo<'info>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
@@ -43,11 +49,11 @@ pub struct Stake<'info> {
 pub fn handler(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
     // TODO: verify nft
 
-    let stake_info = &mut ctx.accounts.stake_info;
+    let stake_info = &mut ctx.accounts.nft_stake;
     stake_info.user = ctx.accounts.user.key();
     stake_info.nft_mint = ctx.accounts.nft_mint.key();
     stake_info.is_active = true;
-    stake_info.staked_at = Clock::get()?.unix_timestamp as u64;
+    stake_info.staked_on = Clock::get()?.unix_timestamp as u64;
 
     let user_info = &ctx.accounts.user.to_account_info();
     let mint_info = &ctx.accounts.nft_mint.to_account_info();

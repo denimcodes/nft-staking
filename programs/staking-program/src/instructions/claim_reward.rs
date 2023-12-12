@@ -4,7 +4,7 @@ use anchor_spl::{
     token_2022,
 };
 
-use crate::stake_info::StakeInfo;
+use crate::stake_info::NftStake;
 
 // 1. update stake info
 // 2. calculate reward
@@ -16,7 +16,7 @@ pub struct ClaimReward<'info> {
     pub user: Signer<'info>,
     pub vault_authority: Signer<'info>,
     #[account(mut)]
-    pub stake_info: Account<'info, StakeInfo>,
+    pub stake_info: Account<'info, NftStake>,
     pub mint: Account<'info, Mint>,
     #[account(mut, token::mint = mint, token::authority = user)]
     pub user_token: Account<'info, TokenAccount>,
