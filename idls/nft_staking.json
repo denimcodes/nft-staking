@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "name": "staking_program",
+  "name": "nft_staking",
   "constants": [
     {
       "name": "DELEGATE_SEED_PREFIX",

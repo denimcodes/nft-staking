@@ -4,7 +4,7 @@ import { KeypairSigner, PublicKey, Umi, generateSigner, none, percentAmount, pub
 import { generateSignerWithSol } from "@metaplex-foundation/umi-bundle-tests";
 import { publicKey as pk, string } from "@metaplex-foundation/umi/serializers";
 import test from "ava";
-import { STAKING_PROGRAM_PROGRAM_ID, claimReward, fetchNftStake, stake, unstake } from "../src";
+import { NFT_STAKING_PROGRAM_ID, claimReward, fetchNftStake, stake, unstake } from "../src";
 import { createUmi } from "./_setup";
 
 const METAPLEX_STANDARD_RULESET = "AdH2Utn6Fus15ZhtenW4hZBQnvtLgM1YCW2MfVp7pYS5";
@@ -62,12 +62,12 @@ test.serial("stake nft", async (t) => {
     tokenOwner: user.publicKey
   }).sendAndConfirm(umi);
 
-  const [delegate, delegateBump] = umi.eddsa.findPda(STAKING_PROGRAM_PROGRAM_ID, [
+  const [delegate, delegateBump] = umi.eddsa.findPda(NFT_STAKING_PROGRAM_ID, [
     string({ size: "variable" }).serialize("delegate"),
     pk().serialize(nftStake.publicKey),
   ]);
 
-  const [lockedAddress, _] = umi.eddsa.findPda(STAKING_PROGRAM_PROGRAM_ID, [
+  const [lockedAddress, _] = umi.eddsa.findPda(NFT_STAKING_PROGRAM_ID, [
     string({ size: "variable" }).serialize("locked_address"),
     pk().serialize(nftStake.publicKey),
   ]);
@@ -161,7 +161,6 @@ test.serial.failing("claim reward amount", async (t) => {
   transactionBuilder().add(createUserTokenIx).add(claimRewardIx).sendAndConfirm(umi);
 
   const stakeAccount = await fetchNftStake(umi, nftStake.publicKey);
-  t.log(stakeAccount);
   t.true(stakeAccount.lastClaimed >= stakeAccount.stakedOn);
 })
 
@@ -177,12 +176,12 @@ test.serial("unstake nft", async (t) => {
   const userNftToken = testContext.userNftToken;
   const userNftTokenRecord = testContext.userNftTokenRecord;
 
-  const [delegate] = umi.eddsa.findPda(STAKING_PROGRAM_PROGRAM_ID, [
+  const [delegate] = umi.eddsa.findPda(NFT_STAKING_PROGRAM_ID, [
     string({ size: "variable" }).serialize("delegate"),
     pk().serialize(nftStake.publicKey),
   ]);
 
-  const [lockedAddress] = umi.eddsa.findPda(STAKING_PROGRAM_PROGRAM_ID, [
+  const [lockedAddress] = umi.eddsa.findPda(NFT_STAKING_PROGRAM_ID, [
     string({ size: "variable" }).serialize("locked_address"),
     pk().serialize(nftStake.publicKey),
   ]);

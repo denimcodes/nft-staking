@@ -12,7 +12,7 @@ pub use state::*;
 declare_id!("58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA");
 
 #[program]
-pub mod staking_program {
+pub mod nft_staking {
     use super::*;
 
     pub fn stake(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {

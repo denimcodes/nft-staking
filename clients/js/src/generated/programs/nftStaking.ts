@@ -13,22 +13,22 @@ import {
   PublicKey,
 } from '@metaplex-foundation/umi';
 import {
-  getStakingProgramErrorFromCode,
-  getStakingProgramErrorFromName,
+  getNftStakingErrorFromCode,
+  getNftStakingErrorFromName,
 } from '../errors';
 
-export const STAKING_PROGRAM_PROGRAM_ID =
+export const NFT_STAKING_PROGRAM_ID =
   '58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA' as PublicKey<'58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA'>;
 
-export function createStakingProgramProgram(): Program {
+export function createNftStakingProgram(): Program {
   return {
-    name: 'stakingProgram',
-    publicKey: STAKING_PROGRAM_PROGRAM_ID,
+    name: 'nftStaking',
+    publicKey: NFT_STAKING_PROGRAM_ID,
     getErrorFromCode(code: number, cause?: Error) {
-      return getStakingProgramErrorFromCode(code, this, cause);
+      return getNftStakingErrorFromCode(code, this, cause);
     },
     getErrorFromName(name: string, cause?: Error) {
-      return getStakingProgramErrorFromName(name, this, cause);
+      return getNftStakingErrorFromName(name, this, cause);
     },
     isOnCluster() {
       return true;
@@ -36,20 +36,20 @@ export function createStakingProgramProgram(): Program {
   };
 }
 
-export function getStakingProgramProgram<T extends Program = Program>(
+export function getNftStakingProgram<T extends Program = Program>(
   context: Pick<Context, 'programs'>,
   clusterFilter?: ClusterFilter
 ): T {
-  return context.programs.get<T>('stakingProgram', clusterFilter);
+  return context.programs.get<T>('nftStaking', clusterFilter);
 }
 
-export function getStakingProgramProgramId(
+export function getNftStakingProgramId(
   context: Pick<Context, 'programs'>,
   clusterFilter?: ClusterFilter
 ): PublicKey {
   return context.programs.getPublicKey(
-    'stakingProgram',
-    STAKING_PROGRAM_PROGRAM_ID,
+    'nftStaking',
+    NFT_STAKING_PROGRAM_ID,
     clusterFilter
   );
 }

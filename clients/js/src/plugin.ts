@@ -1,8 +1,8 @@
 import { UmiPlugin } from "@metaplex-foundation/umi";
-import { createStakingProgramProgram } from "./generated";
+import { createNftStakingProgram } from "./generated";
 
 export const nftStaking = (): UmiPlugin => ({
   install(umi) {
-    umi.programs.add(createStakingProgramProgram(), false);
+    umi.programs.add(createNftStakingProgram(), false);
   },
 });

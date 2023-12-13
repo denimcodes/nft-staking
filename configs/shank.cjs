@@ -7,11 +7,11 @@ const programDir = path.join(__dirname, "..", "programs");
 
 generateIdl({
   generator: "anchor",
-  programName: "staking_program",
+  programName: "nft_staking",
   programId: "58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA",
   idlDir,
   binaryInstallDir,
-  programDir: path.join(programDir, "staking-program"),
+  programDir: path.join(programDir, "nft-staking"),
   rustbin: {
     locked: true,
     versionRangeFallback: "0.27.0",

@@ -147,7 +147,7 @@ export function getNftStakeGpaBuilder(
   context: Pick<Context, 'rpc' | 'programs'>
 ) {
   const programId = context.programs.getPublicKey(
-    'stakingProgram',
+    'nftStaking',
     '58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA'
   );
   return gpaBuilder(context, programId)

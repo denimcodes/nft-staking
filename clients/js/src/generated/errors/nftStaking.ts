@@ -32,7 +32,7 @@ nameToErrorMap.set('CustomError', CustomErrorError);
  * Attempts to resolve a custom program error from the provided error code.
  * @category Errors
  */
-export function getStakingProgramErrorFromCode(
+export function getNftStakingErrorFromCode(
   code: number,
   program: Program,
   cause?: Error
@@ -45,7 +45,7 @@ export function getStakingProgramErrorFromCode(
  * Attempts to resolve a custom program error from the provided error name, i.e. 'Unauthorized'.
  * @category Errors
  */
-export function getStakingProgramErrorFromName(
+export function getNftStakingErrorFromName(
   name: string,
   program: Program,
   cause?: Error

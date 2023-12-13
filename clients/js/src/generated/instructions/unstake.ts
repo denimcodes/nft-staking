@@ -75,7 +75,7 @@ export function unstake(
 ): TransactionBuilder {
   // Program ID.
   const programId = context.programs.getPublicKey(
-    'stakingProgram',
+    'nftStaking',
     '58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA'
   );
 

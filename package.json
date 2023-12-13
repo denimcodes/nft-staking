@@ -9,12 +9,12 @@
         "validator": "pnpm amman start --config ./configs/validator.cjs"
     },
     "dependencies": {
-        "@coral-xyz/anchor": "^0.29.0",
-        "@metaplex-foundation/amman": "^0.12.1",
-        "@metaplex-foundation/kinobi": "^0.16.11",
-        "@metaplex-foundation/shank-js": "^0.1.5"
+        "@coral-xyz/anchor": "^0.29.0"
     },
     "devDependencies": {
+        "@metaplex-foundation/amman": "^0.12.1",
+        "@metaplex-foundation/kinobi": "^0.16.11",
+        "@metaplex-foundation/shank-js": "^0.1.5",
         "@types/bn.js": "^5.1.0",
         "@types/chai": "^4.3.0",
         "@types/mocha": "^9.0.0",

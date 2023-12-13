@@ -9,9 +9,9 @@ module.exports = {
     commitment: "processed",
     programs: [
       {
-        label: "Staking Program",
+        label: "NFT Staking Program",
         programId: "58LCGWxNcN1dsbDaWpR4YMNxVdSA8mx7pC8z59k6nfCA",
-        deployPath: getProgram("staking_program.so"),
+        deployPath: getProgram("nft_staking.so"),
       },
     ],
     accountsCluster: "https://api.metaplex.solana.com",
