@@ -94,7 +94,7 @@ export function unstake(
     },
     userNftToken: {
       index: 3,
-      isWritable: false as boolean,
+      isWritable: true as boolean,
       value: input.userNftToken ?? null,
     },
     userNftTokenRecord: {
@@ -114,12 +114,12 @@ export function unstake(
     },
     edition: {
       index: 7,
-      isWritable: false as boolean,
+      isWritable: true as boolean,
       value: input.edition ?? null,
     },
     metadata: {
       index: 8,
-      isWritable: false as boolean,
+      isWritable: true as boolean,
       value: input.metadata ?? null,
     },
     authRules: {

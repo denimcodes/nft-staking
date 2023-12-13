@@ -15,7 +15,7 @@ pub struct Unstake<'info> {
     #[account(mut)]
     pub nft_stake: Account<'info, NftStake>,
     pub nft_mint: Account<'info, Mint>,
-    #[account(token::mint = nft_mint, token::authority = user)]
+    #[account(mut, token::mint = nft_mint, token::authority = user)]
     pub user_nft_token: Account<'info, TokenAccount>,
     /// CHECK: nft token record owner = user
     #[account(mut)]
@@ -25,8 +25,10 @@ pub struct Unstake<'info> {
     #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump)]
     pub locked_address: SystemAccount<'info>,
     /// CHECK: nft metadata edition
+    #[account(mut)]
     pub edition: AccountInfo<'info>,
     /// CHECK: nft creator, collection
+    #[account(mut)]
     pub metadata: AccountInfo<'info>,
     /// CHECK: metaplex standard ruleset
     #[account(mut)]

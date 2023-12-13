@@ -29,8 +29,9 @@ pub struct ClaimReward<'info> {
 pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let nft_stake = &mut ctx.accounts.nft_stake;
 
-    let reward_amount = nft_stake.calculate_reward_amount();
+    let reward_amount = 100;
     nft_stake.reward_amount += reward_amount;
+    nft_stake.last_claimed = Clock::get()?.unix_timestamp;
 
     // transfer reward to user
     let decimals = ctx.accounts.mint.decimals;

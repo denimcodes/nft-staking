@@ -20,7 +20,7 @@ pub struct Stake<'info> {
     #[account(init, payer = user, space = 8 + NftStake::INIT_SPACE)]
     pub nft_stake: Account<'info, NftStake>,
     pub nft_mint: Account<'info, Mint>,
-    #[account(token::mint = nft_mint, token::authority = user)]
+    #[account(mut, token::mint = nft_mint, token::authority = user)]
     pub user_nft_token: Account<'info, TokenAccount>,
     /// CHECK: nft token record owner = user
     #[account(mut)]
@@ -30,8 +30,10 @@ pub struct Stake<'info> {
     #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump)]
     pub locked_address: SystemAccount<'info>,
     /// CHECK: nft metadata edition
+    #[account(mut)]
     pub edition: AccountInfo<'info>,
     /// CHECK: nft creator, collection
+    #[account(mut)]
     pub metadata: AccountInfo<'info>,
     /// CHECK: metaplex standard ruleset
     #[account(mut)]
@@ -53,7 +55,8 @@ pub fn handler(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
     stake_info.user = ctx.accounts.user.key();
     stake_info.nft_mint = ctx.accounts.nft_mint.key();
     stake_info.is_active = true;
-    stake_info.staked_on = Clock::get()?.unix_timestamp ;
+    stake_info.staked_on = Clock::get()?.unix_timestamp;
+    stake_info.delegate_bump = delegate_bump;
 
     let user_info = &ctx.accounts.user.to_account_info();
     let mint_info = &ctx.accounts.nft_mint.to_account_info();
