@@ -1,10 +1,10 @@
 import { DigitalAssetWithToken, TokenDelegateRole, TokenState, createProgrammableNft, fetchDigitalAssetWithAssociatedToken, findMasterEditionPda, findMetadataPda, findTokenRecordPda } from "@metaplex-foundation/mpl-token-metadata";
 import { createMintWithAssociatedToken, createTokenIfMissing, findAssociatedTokenPda } from "@metaplex-foundation/mpl-toolbox";
-import { KeypairSigner, PublicKey, Umi, generateSigner, none, percentAmount, publicKey, some, transactionBuilder } from "@metaplex-foundation/umi";
+import { KeypairSigner, Pda, PublicKey, Umi, generateSigner, none, percentAmount, publicKey, some, transactionBuilder } from "@metaplex-foundation/umi";
 import { generateSignerWithSol } from "@metaplex-foundation/umi-bundle-tests";
 import { publicKey as pk, string } from "@metaplex-foundation/umi/serializers";
 import test from "ava";
-import { NFT_STAKING_PROGRAM_ID, claimReward, fetchNftStake, stake, unstake } from "../src";
+import { NFT_STAKING_PROGRAM_ID, claimReward, fetchConfig, fetchNftStake, initConfig, stake, unstake } from "../src";
 import { createUmi } from "./_setup";
 
 const METAPLEX_STANDARD_RULESET = "AdH2Utn6Fus15ZhtenW4hZBQnvtLgM1YCW2MfVp7pYS5";
@@ -15,15 +15,23 @@ type TestContext = {
   nftMint: KeypairSigner;
   userNftToken: PublicKey<string>;
   userNftTokenRecord: PublicKey<string>;
+  admin: KeypairSigner;
+  config: Pda;
+  rewardMint: KeypairSigner;
+  vaultAuthority: KeypairSigner;
 }
 
 test.before(async t => {
   const umi = await createUmi();
 
   const user = await generateSignerWithSol(umi);
+  const admin = await generateSignerWithSol(umi);
+  const vaultAuthority = generateSigner(umi);
+  const config = umi.eddsa.findPda(NFT_STAKING_PROGRAM_ID, [string({ size: "variable" }).serialize("config")]);
   const nftStake = generateSigner(umi);
 
   const nftMint = generateSigner(umi);
+  const rewardMint = generateSigner(umi);
 
   const [userNftToken] = findAssociatedTokenPda(umi, { mint: nftMint.publicKey, owner: user.publicKey });
   const [userNftTokenRecord] = findTokenRecordPda(umi, { mint: nftMint.publicKey, token: userNftToken });
@@ -34,23 +42,37 @@ test.before(async t => {
     nftMint,
     nftStake,
     userNftToken,
-    userNftTokenRecord
+    userNftTokenRecord,
+    admin,
+    config,
+    rewardMint,
+    vaultAuthority
   }
   t.context = testContext;
 })
 
+test.serial("initialize config", async (t) => {
+  const { umi, admin, config, rewardMint, vaultAuthority } = t.context as TestContext;
+
+  const [rewardToken] = findAssociatedTokenPda(umi, { mint: rewardMint.publicKey, owner: vaultAuthority.publicKey });
+
+  await initConfig(umi, {
+    admin,
+    config,
+    rewardMint: rewardMint.publicKey,
+    rewardToken,
+    rewardsPerDay: 1000
+  }).sendAndConfirm(umi);
+
+  const configAccount = await fetchConfig(umi, config);
+  t.is(configAccount.admin, admin.publicKey);
+  t.is(configAccount.rewardMint, rewardMint.publicKey);
+  t.is(configAccount.rewardToken, rewardToken);
+  t.is(configAccount.rewardsPerDay, BigInt(1000));
+})
+
 test.serial("stake nft", async (t) => {
-  const testContext = t.context as TestContext;
-
-  const umi = testContext.umi;
-
-  const user = testContext.user;
-  const nftStake = testContext.nftStake;
-
-  const nftMint = testContext.nftMint;
-  const userNftToken = testContext.userNftToken;
-  const userNftTokenRecord = testContext.userNftTokenRecord;
-
+  const { umi, user, nftStake, nftMint, userNftToken, userNftTokenRecord } = t.context as TestContext;
 
   await createProgrammableNft(umi, {
     name: "Test PNft",
@@ -95,7 +117,7 @@ test.serial("stake nft", async (t) => {
   }).sendAndConfirm(umi);
 
   const stakeAccount = await fetchNftStake(umi, nftStake.publicKey);
-  t.is(stakeAccount.user, user.publicKey);
+  t.is(stakeAccount.authority, user.publicKey);
   t.is(stakeAccount.nftMint, nftMint.publicKey);
   t.is(stakeAccount.isActive, true);
   t.true(stakeAccount.stakedOn > 0 && stakeAccount.stakedOn <= Math.floor(Date.now() / 1000)
@@ -125,13 +147,7 @@ test.serial("stake nft", async (t) => {
 })
 
 test.serial.failing("claim reward amount", async (t) => {
-  const testContext = t.context as TestContext;
-
-  const umi = testContext.umi;
-  const user = testContext.user;
-  const nftStake = testContext.nftStake;
-
-  const mint = generateSigner(umi);
+  const { umi, user, nftStake, config, rewardMint: mint } = t.context as TestContext;
 
   const vaultAuthority = generateSigner(umi);
   const [vaultToken] = findAssociatedTokenPda(umi, { mint: mint.publicKey, owner: vaultAuthority.publicKey });
@@ -151,6 +167,7 @@ test.serial.failing("claim reward amount", async (t) => {
 
   const claimRewardIx = claimReward(umi, {
     user,
+    config,
     vaultAuthority,
     nftStake: nftStake.publicKey,
     mint: mint.publicKey,
@@ -165,16 +182,7 @@ test.serial.failing("claim reward amount", async (t) => {
 })
 
 test.serial("unstake nft", async (t) => {
-  const testContext = t.context as TestContext;
-
-  const umi = testContext.umi;
-
-  const user = testContext.user;
-  const nftStake = testContext.nftStake;
-
-  const nftMint = testContext.nftMint;
-  const userNftToken = testContext.userNftToken;
-  const userNftTokenRecord = testContext.userNftTokenRecord;
+  const { umi, user, nftStake, nftMint, userNftToken, userNftTokenRecord } = t.context as TestContext;
 
   const [delegate] = umi.eddsa.findPda(NFT_STAKING_PROGRAM_ID, [
     string({ size: "variable" }).serialize("delegate"),

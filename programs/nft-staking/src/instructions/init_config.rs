@@ -18,6 +18,7 @@ pub fn handler(
     rewards_per_day: u64,
 ) -> Result<()> {
     let config = &mut ctx.accounts.config;
+    config.admin = ctx.accounts.admin.key();
     config.reward_mint = reward_mint;
     config.reward_token = reward_token;
     config.rewards_per_day = rewards_per_day;

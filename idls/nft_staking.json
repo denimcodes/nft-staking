@@ -10,6 +10,74 @@
   ],
   "instructions": [
     {
+      "name": "initConfig",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "rewardMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "rewardToken",
+          "type": "publicKey"
+        },
+        {
+          "name": "rewardsPerDay",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "updateConfig",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "config",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "rewardMint",
+          "type": "publicKey"
+        },
+        {
+          "name": "rewardToken",
+          "type": "publicKey"
+        },
+        {
+          "name": "rewardsPerDay",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "stake",
       "accounts": [
         {
@@ -40,12 +108,42 @@
         {
           "name": "delegate",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "delegate"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "NftStake",
+                "path": "nft_stake"
+              }
+            ]
+          }
         },
         {
           "name": "lockedAddress",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "locked_address"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "NftStake",
+                "path": "nft_stake"
+              }
+            ]
+          }
         },
         {
           "name": "edition",
@@ -126,12 +224,42 @@
         {
           "name": "delegate",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "delegate"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "NftStake",
+                "path": "nft_stake"
+              }
+            ]
+          }
         },
         {
           "name": "lockedAddress",
           "isMut": true,
-          "isSigner": false
+          "isSigner": false,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "type": "string",
+                "value": "locked_address"
+              },
+              {
+                "kind": "account",
+                "type": "publicKey",
+                "account": "NftStake",
+                "path": "nft_stake"
+              }
+            ]
+          }
         },
         {
           "name": "edition",

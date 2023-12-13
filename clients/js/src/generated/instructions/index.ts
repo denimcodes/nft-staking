@@ -7,5 +7,7 @@
  */
 
 export * from './claimReward';
+export * from './initConfig';
 export * from './stake';
 export * from './unstake';
+export * from './updateConfig';
