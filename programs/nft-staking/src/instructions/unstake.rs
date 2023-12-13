@@ -6,7 +6,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use crate::{nft_stake::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
+use crate::{nft_stake::NftStake, METAPLEX_STANDARD_RULESET, SEED_DELEGATE, SEED_LOCKED_ADDRESS};
 
 #[derive(Accounts)]
 pub struct Unstake<'info> {
@@ -20,9 +20,9 @@ pub struct Unstake<'info> {
     /// CHECK: nft token record owner = user
     #[account(mut)]
     pub user_nft_token_record: AccountInfo<'info>,
-    #[account(mut, seeds = [DELEGATE_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump = nft_stake.delegate_bump)]
+    #[account(mut, seeds = [SEED_DELEGATE.as_bytes(), nft_stake.key().as_ref()], bump = nft_stake.delegate_bump)]
     pub delegate: SystemAccount<'info>,
-    #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump)]
+    #[account(mut, seeds = [SEED_LOCKED_ADDRESS.as_bytes(), nft_stake.key().as_ref()], bump)]
     pub locked_address: SystemAccount<'info>,
     /// CHECK: nft metadata edition
     #[account(mut)]
@@ -31,7 +31,7 @@ pub struct Unstake<'info> {
     #[account(mut)]
     pub metadata: AccountInfo<'info>,
     /// CHECK: metaplex standard ruleset
-    #[account(mut)]
+    #[account(mut, address = METAPLEX_STANDARD_RULESET)]
     pub auth_rules: AccountInfo<'info>,
     /// CHECK: program address
     pub auth_rules_program: AccountInfo<'info>,
@@ -64,7 +64,7 @@ pub fn handler(ctx: Context<Unstake>) -> Result<()> {
     // signer seeds
     let nft_stake_key = nft_stake.key();
     let delegate_signer_seeds: &[&[&[u8]]] = &[&[
-        DELEGATE_SEED_PREFIX.as_bytes(),
+        SEED_DELEGATE.as_bytes(),
         nft_stake_key.as_ref(),
         &[nft_stake.delegate_bump],
     ]];

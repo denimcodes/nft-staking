@@ -6,7 +6,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use crate::{nft_stake::NftStake, DELEGATE_SEED_PREFIX, LOCKED_ADDRESS_SEED_PREFIX};
+use crate::{nft_stake::NftStake, METAPLEX_STANDARD_RULESET, SEED_DELEGATE, SEED_LOCKED_ADDRESS};
 
 // 1. update stake info
 // 2. update authority to delegate
@@ -25,9 +25,9 @@ pub struct Stake<'info> {
     /// CHECK: nft token record owner = user
     #[account(mut)]
     pub user_nft_token_record: AccountInfo<'info>,
-    #[account(mut, seeds = [DELEGATE_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump = delegate_bump)]
+    #[account(mut, seeds = [SEED_DELEGATE.as_bytes(), nft_stake.key().as_ref()], bump = delegate_bump)]
     pub delegate: SystemAccount<'info>,
-    #[account(mut, seeds = [LOCKED_ADDRESS_SEED_PREFIX.as_bytes(), nft_stake.key().as_ref()], bump)]
+    #[account(mut, seeds = [SEED_LOCKED_ADDRESS.as_bytes(), nft_stake.key().as_ref()], bump)]
     pub locked_address: SystemAccount<'info>,
     /// CHECK: nft metadata edition
     #[account(mut)]
@@ -36,7 +36,7 @@ pub struct Stake<'info> {
     #[account(mut)]
     pub metadata: AccountInfo<'info>,
     /// CHECK: metaplex standard ruleset
-    #[account(mut)]
+    #[account(mut, address = METAPLEX_STANDARD_RULESET)]
     pub auth_rules: AccountInfo<'info>,
     /// CHECK: program address
     pub auth_rules_program: AccountInfo<'info>,
@@ -52,7 +52,7 @@ pub fn handler(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
     // TODO: verify nft
 
     let stake_info = &mut ctx.accounts.nft_stake;
-    stake_info.user = ctx.accounts.user.key();
+    stake_info.authority = ctx.accounts.user.key();
     stake_info.nft_mint = ctx.accounts.nft_mint.key();
     stake_info.is_active = true;
     stake_info.staked_on = Clock::get()?.unix_timestamp;
@@ -96,7 +96,7 @@ pub fn handler(ctx: Context<Stake>, delegate_bump: u8) -> Result<()> {
     //delegate signer seeds
     let stake_info_key = stake_info.key();
     let delegate_signer_seeds: &[&[&[u8]]] = &[&[
-        DELEGATE_SEED_PREFIX.as_bytes(),
+        SEED_DELEGATE.as_bytes(),
         stake_info_key.as_ref(),
         &[delegate_bump],
     ]];

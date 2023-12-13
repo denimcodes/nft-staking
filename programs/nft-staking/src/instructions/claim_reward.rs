@@ -4,11 +4,7 @@ use anchor_spl::{
     token_2022,
 };
 
-use crate::nft_stake::NftStake;
-
-// 1. update stake info
-// 2. calculate reward
-// 3. transfer reward to user from vault
+use crate::{config::Config, nft_stake::NftStake};
 
 #[derive(Accounts)]
 pub struct ClaimReward<'info> {
@@ -17,6 +13,8 @@ pub struct ClaimReward<'info> {
     pub vault_authority: Signer<'info>,
     #[account(mut)]
     pub nft_stake: Account<'info, NftStake>,
+    pub config: Account<'info, Config>,
+    #[account(address = config.reward_mint)]
     pub mint: Account<'info, Mint>,
     #[account(mut, token::mint = mint, token::authority = user)]
     pub user_token: Account<'info, TokenAccount>,
@@ -28,8 +26,9 @@ pub struct ClaimReward<'info> {
 
 pub fn handler(ctx: Context<ClaimReward>) -> Result<()> {
     let nft_stake = &mut ctx.accounts.nft_stake;
+    let config = &ctx.accounts.config;
 
-    let reward_amount = nft_stake.calculate_reward_amount();
+    let reward_amount = nft_stake.calculate_reward_amount(config.rewards_per_day);
     nft_stake.reward_amount += reward_amount;
     nft_stake.last_claimed = Clock::get()?.unix_timestamp;
 
