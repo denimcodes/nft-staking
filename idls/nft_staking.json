@@ -3,7 +3,7 @@
   "name": "nft_staking",
   "constants": [
     {
-      "name": "DELEGATE_SEED_PREFIX",
+      "name": "SEED_DELEGATE",
       "type": "string",
       "value": "\"delegate\""
     }
@@ -195,6 +195,11 @@
           "isSigner": false
         },
         {
+          "name": "config",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "mint",
           "isMut": false,
           "isSigner": false
@@ -225,12 +230,36 @@
   ],
   "accounts": [
     {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardToken",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardsPerDay",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "NftStake",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "user",
+            "name": "authority",
             "type": "publicKey"
           },
           {
@@ -256,10 +285,6 @@
           {
             "name": "rewardAmount",
             "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
           },
           {
             "name": "delegateBump",

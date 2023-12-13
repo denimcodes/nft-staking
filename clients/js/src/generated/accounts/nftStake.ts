@@ -35,26 +35,24 @@ export type NftStake = Account<NftStakeAccountData>;
 
 export type NftStakeAccountData = {
   discriminator: Array<number>;
-  user: PublicKey;
+  authority: PublicKey;
   nftMint: PublicKey;
   isActive: boolean;
   stakedOn: bigint;
   unstakedOn: bigint;
   lastClaimed: bigint;
   rewardAmount: bigint;
-  bump: number;
   delegateBump: number;
 };
 
 export type NftStakeAccountDataArgs = {
-  user: PublicKey;
+  authority: PublicKey;
   nftMint: PublicKey;
   isActive: boolean;
   stakedOn: number | bigint;
   unstakedOn: number | bigint;
   lastClaimed: number | bigint;
   rewardAmount: number | bigint;
-  bump: number;
   delegateBump: number;
 };
 
@@ -66,14 +64,13 @@ export function getNftStakeAccountDataSerializer(): Serializer<
     struct<NftStakeAccountData>(
       [
         ['discriminator', array(u8(), { size: 8 })],
-        ['user', publicKeySerializer()],
+        ['authority', publicKeySerializer()],
         ['nftMint', publicKeySerializer()],
         ['isActive', bool()],
         ['stakedOn', i64()],
         ['unstakedOn', i64()],
         ['lastClaimed', i64()],
         ['rewardAmount', u64()],
-        ['bump', u8()],
         ['delegateBump', u8()],
       ],
       { description: 'NftStakeAccountData' }
@@ -153,31 +150,29 @@ export function getNftStakeGpaBuilder(
   return gpaBuilder(context, programId)
     .registerFields<{
       discriminator: Array<number>;
-      user: PublicKey;
+      authority: PublicKey;
       nftMint: PublicKey;
       isActive: boolean;
       stakedOn: number | bigint;
       unstakedOn: number | bigint;
       lastClaimed: number | bigint;
       rewardAmount: number | bigint;
-      bump: number;
       delegateBump: number;
     }>({
       discriminator: [0, array(u8(), { size: 8 })],
-      user: [8, publicKeySerializer()],
+      authority: [8, publicKeySerializer()],
       nftMint: [40, publicKeySerializer()],
       isActive: [72, bool()],
       stakedOn: [73, i64()],
       unstakedOn: [81, i64()],
       lastClaimed: [89, i64()],
       rewardAmount: [97, u64()],
-      bump: [105, u8()],
-      delegateBump: [106, u8()],
+      delegateBump: [105, u8()],
     })
     .deserializeUsing<NftStake>((account) => deserializeNftStake(account))
     .whereField('discriminator', [231, 220, 78, 61, 9, 103, 95, 148]);
 }
 
 export function getNftStakeSize(): number {
-  return 107;
+  return 106;
 }

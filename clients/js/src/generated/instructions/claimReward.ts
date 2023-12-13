@@ -32,6 +32,7 @@ export type ClaimRewardInstructionAccounts = {
   user: Signer;
   vaultAuthority: Signer;
   nftStake: PublicKey | Pda;
+  config: PublicKey | Pda;
   mint: PublicKey | Pda;
   userToken: PublicKey | Pda;
   vaultToken: PublicKey | Pda;
@@ -88,24 +89,29 @@ export function claimReward(
       isWritable: true as boolean,
       value: input.nftStake ?? null,
     },
-    mint: { index: 3, isWritable: false as boolean, value: input.mint ?? null },
+    config: {
+      index: 3,
+      isWritable: false as boolean,
+      value: input.config ?? null,
+    },
+    mint: { index: 4, isWritable: false as boolean, value: input.mint ?? null },
     userToken: {
-      index: 4,
+      index: 5,
       isWritable: true as boolean,
       value: input.userToken ?? null,
     },
     vaultToken: {
-      index: 5,
+      index: 6,
       isWritable: true as boolean,
       value: input.vaultToken ?? null,
     },
     tokenProgram: {
-      index: 6,
+      index: 7,
       isWritable: false as boolean,
       value: input.tokenProgram ?? null,
     },
     systemProgram: {
-      index: 7,
+      index: 8,
       isWritable: false as boolean,
       value: input.systemProgram ?? null,
     },
